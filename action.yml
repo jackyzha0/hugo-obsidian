@@ -1,4 +1,4 @@
-name: goaction-example
+name: hugo-obsidian
 inputs:
   input:
     default: .
