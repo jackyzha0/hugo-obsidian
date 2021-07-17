@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	md "github.com/nikitavoloboev/markdown-parser"
 	"gopkg.in/yaml.v3"
 	"io/fs"
@@ -37,7 +38,9 @@ func parse(dir, pathPrefix string) []Link {
 
 	// parse md
 	var links []Link
+	fmt.Printf("%s\n", trim(dir, pathPrefix, ".md"))
 	for text, target := range md.GetAllLinks(string(bytes)) {
+		fmt.Printf("  %s\n", trim(target, pathPrefix, ".md"))
 		links = append(links, Link{
 			Source: trim(dir, pathPrefix, ".md"),
 			Target: target,
@@ -62,6 +65,7 @@ func walk(root, ext string) (res []Link) {
 	if err != nil {
 		panic(err)
 	}
+	fmt.Printf("parsed %d total links \n", len(res))
 	return res
 }
 
@@ -69,13 +73,13 @@ func walk(root, ext string) (res []Link) {
 func filter(links []Link) (res []Link) {
 	for _, l := range links {
 		// filter external and non-md
-		println(l.Target)
 		isInternal := strings.HasPrefix(l.Target, "/")
 		isMarkdown := filepath.Ext(l.Target) == "" || filepath.Ext(l.Target) == ".md"
 		if isInternal && isMarkdown {
 			res = append(res, l)
 		}
 	}
+	fmt.Printf("removed %d external and non-markdown links\n", len(links) - len(res))
 	return res
 }
 
