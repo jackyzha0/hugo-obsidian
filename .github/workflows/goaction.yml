@@ -12,5 +12,5 @@ jobs:
     - name: Update action files
       uses: posener/goaction@v1
       with:
-        name: goaction-example
+        name: hugo-obsidian
         github-token: '${{ secrets.GITHUB_TOKEN }}'
