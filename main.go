@@ -1,11 +1,12 @@
 package main
 
 import (
-	"fmt"
+	"flag"
 	md "github.com/nikitavoloboev/markdown-parser"
 	"gopkg.in/yaml.v3"
 	"io/fs"
 	"io/ioutil"
+	"path"
 	"path/filepath"
 	"strings"
 )
@@ -48,6 +49,7 @@ func parse(dir, pathPrefix string) []Link {
 
 // recursively walk directory and return all files with given extension
 func walk(root, ext string) (res []Link) {
+	println(root)
 	err := filepath.WalkDir(root, func(s string, d fs.DirEntry, e error) error {
 		if e != nil {
 			return e
@@ -107,15 +109,21 @@ func index(links []Link) (index Index) {
 	return index
 }
 
-func write(index Index) error {
-	links, mErr := yaml.Marshal(&index)
+func write(links []Link, out string) error {
+	index := index(links)
+	resStruct := struct{
+		Index Index
+		Links []Link
+	}{
+		Index: index,
+		Links: links,
+	}
+	marshalledIndex, mErr := yaml.Marshal(&resStruct)
 	if mErr != nil {
 		return mErr
 	}
 
-	fmt.Printf("%s\n", links)
-
-	writeErr := ioutil.WriteFile("linkIndex.yaml", links, 0644)
+	writeErr := ioutil.WriteFile(path.Join(out, "linkIndex.yaml"), marshalledIndex, 0644)
 	if writeErr != nil {
 		return writeErr
 	}
@@ -123,9 +131,12 @@ func write(index Index) error {
 }
 
 func main() {
-	l := walk("../www/content", ".md")
+	in := flag.String("input", ".", "Input Directory")
+	out := flag.String("output", ".", "Output Directory")
+	flag.Parse()
+	l := walk(*in, ".md")
 	f := filter(l)
-	err := write(index(f))
+	err := write(f, *out)
 	if err != nil {
 		panic(err)
 	}
