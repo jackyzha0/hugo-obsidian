@@ -28,6 +28,10 @@ func trim(source, prefix, suffix string) string {
 	return strings.TrimPrefix(strings.TrimSuffix(source, suffix), prefix)
 }
 
+func hugoPathTrim(source string) string {
+	return strings.TrimSuffix(strings.TrimSuffix(source, "/index"), "_index")
+}
+
 // parse single file for links
 func parse(dir, pathPrefix string) []Link {
 	// read file
@@ -42,8 +46,8 @@ func parse(dir, pathPrefix string) []Link {
 	for text, target := range md.GetAllLinks(string(bytes)) {
 		fmt.Printf("  %s\n", trim(target, pathPrefix, ".md"))
 		links = append(links, Link{
-			Source: trim(dir, pathPrefix, ".md"),
-			Target: target,
+			Source: hugoPathTrim(trim(dir, pathPrefix, ".md")),
+			Target: strings.Split(target, "#")[0],
 			Text: text,
 		})
 	}
@@ -95,8 +99,9 @@ func index(links []Link) (index Index) {
 		}
 
 		// backlink (only if internal)
-		if val, ok := backlinkMap[l.Target]; ok {
-			val = append(val, bl)
+
+		if _, ok := backlinkMap[l.Target]; ok {
+			backlinkMap[l.Target] = append(backlinkMap[l.Target], bl)
 		} else {
 			backlinkMap[l.Target] = []Link{bl}
 		}
