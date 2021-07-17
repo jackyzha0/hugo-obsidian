@@ -9,6 +9,9 @@ inputs:
     description: "Output Directory"
     required: false
 description: simple GitHub action to parse Markdown Links into a .yaml file for Hugo
+branding:
+  icon: anchor
+  color: purple
 runs:
   using: docker
   image: Dockerfile
