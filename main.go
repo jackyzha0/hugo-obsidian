@@ -15,6 +15,12 @@ type Link struct {
 	Text   string
 }
 
+type LinkTable = map[string][]Link
+type Index struct {
+	Links LinkTable
+	Backlinks LinkTable
+}
+
 func trim(source, prefix, suffix string) string {
 	return strings.TrimPrefix(strings.TrimSuffix(source, suffix), prefix)
 }
@@ -29,9 +35,9 @@ func parse(dir, pathPrefix string) []Link {
 
 	// parse md
 	var links []Link
-	fmt.Printf("%s \n", trim(dir, pathPrefix, ".md"))
+	//fmt.Printf("%s \n", trim(dir, pathPrefix, ".md"))
 	for text, target := range md.GetAllLinks(string(bytes)) {
-		fmt.Printf("  %s -> %s \n", text, target)
+		//fmt.Printf("  %s -> %s \n", text, target)
 		links = append(links, Link{
 			Source: trim(dir, pathPrefix, ".md"),
 			Target: target,
@@ -42,18 +48,54 @@ func parse(dir, pathPrefix string) []Link {
 }
 
 // recursively walk directory and return all files with given extension
-func find(root, ext string) {
-	filepath.WalkDir(root, func(s string, d fs.DirEntry, e error) error {
+func walk(root, ext string) (res []Link) {
+	err := filepath.WalkDir(root, func(s string, d fs.DirEntry, e error) error {
 		if e != nil {
 			return e
 		}
 		if filepath.Ext(d.Name()) == ext {
-			parse(s, root)
+			res = append(res, parse(s, root)...)
 		}
 		return nil
 	})
+	if err != nil {
+		panic(err)
+	}
+	return res
+}
+
+// constructs index from links
+func index(links []Link) (index Index) {
+	linkMap := make(map[string][]Link)
+	backlinkMap := make(map[string][]Link)
+	for _, l := range links {
+		bl := Link{
+			Source: l.Target,
+			Target: l.Source,
+			Text: l.Text,
+		}
+
+		// map has link
+		if val, ok := backlinkMap[l.Target]; ok {
+			val = append(val, bl)
+		} else {
+			backlinkMap[l.Target] = []Link{bl}
+		}
+
+		if val, ok := linkMap[l.Source]; ok {
+			val = append(val, l)
+		} else {
+			linkMap[l.Target] = []Link{l}
+		}
+	}
+	index.Links = linkMap
+	index.Backlinks = backlinkMap
+	return index
 }
 
 func main() {
-	find("../www/content", ".md")
+	l := walk("../www/content", ".md")
+	i := index(l)
+	fmt.Printf("%+v", i.Links["/toc/cognitive-sciences"])
+	fmt.Printf("%+v", i.Backlinks["/toc/cognitive-sciences"])
 }
