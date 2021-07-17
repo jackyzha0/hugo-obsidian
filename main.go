@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	md "github.com/nikitavoloboev/markdown-parser"
+	"gopkg.in/yaml.v3"
 	"io/fs"
 	"io/ioutil"
 	"path/filepath"
@@ -35,9 +36,7 @@ func parse(dir, pathPrefix string) []Link {
 
 	// parse md
 	var links []Link
-	//fmt.Printf("%s \n", trim(dir, pathPrefix, ".md"))
 	for text, target := range md.GetAllLinks(string(bytes)) {
-		//fmt.Printf("  %s -> %s \n", text, target)
 		links = append(links, Link{
 			Source: trim(dir, pathPrefix, ".md"),
 			Target: target,
@@ -64,6 +63,20 @@ func walk(root, ext string) (res []Link) {
 	return res
 }
 
+// filter out certain links (e.g. to media)
+func filter(links []Link) (res []Link) {
+	for _, l := range links {
+		// filter external and non-md
+		println(l.Target)
+		isInternal := strings.HasPrefix(l.Target, "/")
+		isMarkdown := filepath.Ext(l.Target) == "" || filepath.Ext(l.Target) == ".md"
+		if isInternal && isMarkdown {
+			res = append(res, l)
+		}
+	}
+	return res
+}
+
 // constructs index from links
 func index(links []Link) (index Index) {
 	linkMap := make(map[string][]Link)
@@ -75,13 +88,14 @@ func index(links []Link) (index Index) {
 			Text: l.Text,
 		}
 
-		// map has link
+		// backlink (only if internal)
 		if val, ok := backlinkMap[l.Target]; ok {
 			val = append(val, bl)
 		} else {
 			backlinkMap[l.Target] = []Link{bl}
 		}
 
+		// regular link
 		if val, ok := linkMap[l.Source]; ok {
 			val = append(val, l)
 		} else {
@@ -93,9 +107,26 @@ func index(links []Link) (index Index) {
 	return index
 }
 
+func write(index Index) error {
+	links, mErr := yaml.Marshal(&index)
+	if mErr != nil {
+		return mErr
+	}
+
+	fmt.Printf("%s\n", links)
+
+	writeErr := ioutil.WriteFile("linkIndex.yaml", links, 0644)
+	if writeErr != nil {
+		return writeErr
+	}
+	return nil
+}
+
 func main() {
 	l := walk("../www/content", ".md")
-	i := index(l)
-	fmt.Printf("%+v", i.Links["/toc/cognitive-sciences"])
-	fmt.Printf("%+v", i.Backlinks["/toc/cognitive-sciences"])
+	f := filter(l)
+	err := write(index(f))
+	if err != nil {
+		panic(err)
+	}
 }

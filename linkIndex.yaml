@@ -1,0 +1,518 @@
+links:
+    /books:
+        - source: /notwork/index
+          target: /books
+          text: Full Booklist
+    /notwork:
+        - source: /_index
+          target: /notwork
+          text: non-work endeavours
+    /posts:
+        - source: /notwork/index
+          target: /posts
+          text: my blog
+    /posts/2020:
+        - source: /newsletters/issue-0
+          target: /posts/2020
+          text: reflection piece about my 2020
+    /posts/a-failure-resume:
+        - source: /thoughts/introductions
+          target: /posts/a-failure-resume
+          text: a-failure-resume
+    /posts/ai-systems:
+        - source: /thoughts/machine-learning
+          target: /posts/ai-systems
+          text: AI Systems
+    /posts/collaborative-thinking:
+        - source: /toc/communities-and-urban-planning
+          target: /posts/collaborative-thinking
+          text: collaborative-thinking
+    /posts/ctrlv-next:
+        - source: /thoughts/project-list
+          target: /posts/ctrlv-next
+          text: ctrl-v
+    /posts/digital-gardening:
+        - source: /posts/collaborative-thinking
+          target: /posts/digital-gardening
+          text: my digital garden
+    /posts/reflect:
+        - source: /thoughts/project-list
+          target: /posts/reflect
+          text: reflect
+    /thoughts/academia:
+        - source: /posts/collaborative-thinking
+          target: /thoughts/academia
+          text: academia
+    /thoughts/articles/cities-and-programming:
+        - source: /newsletters/issue-5
+          target: /thoughts/articles/cities-and-programming
+          text: cities-and-programming
+    /thoughts/articles/pseudonymous-web:
+        - source: /newsletters/issue-5
+          target: /thoughts/articles/pseudonymous-web
+          text: pseudonymous-web
+    /thoughts/attention-economy:
+        - source: /posts/paid-oss
+          target: /thoughts/attention-economy
+          text: Attention
+    /thoughts/books/design-justice:
+        - source: /posts/hackathons
+          target: /thoughts/books/design-justice
+          text: '*Design Justice*'
+    /thoughts/books/fctc:
+        - source: /thoughts/articles/the-ones-who-walk-from-omelas
+          target: /thoughts/books/fctc
+          text: From Counterculture to Cyberculture
+    /thoughts/books/mindstorms:
+        - source: /thoughts/search-or-be-found
+          target: /thoughts/books/mindstorms
+          text: mindstorms
+    /thoughts/communities:
+        - source: /toc/communities-and-urban-planning
+          target: /thoughts/communities
+          text: communities
+    /thoughts/creation-vs-maintenance:
+        - source: /posts/paid-oss
+          target: /thoughts/creation-vs-maintenance
+          text: Maintenance is less so.
+    /thoughts/embedded-ai:
+        - source: /toc/cognitive-sciences
+          target: /thoughts/embedded-ai
+          text: Embedded AI
+    /thoughts/emergent-behaviour:
+        - source: /toc/cognitive-sciences
+          target: /thoughts/emergent-behaviour
+          text: Emergent Behaviour
+    /thoughts/ephemereal-content:
+        - source: /thoughts/project-list
+          target: /thoughts/ephemereal-content
+          text: ephemerality
+    /thoughts/extended-mind:
+        - source: /toc/cognitive-sciences
+          target: /thoughts/extended-mind
+          text: Extended Mind
+    /thoughts/feedback-loops:
+        - source: /thoughts/exploit-explore
+          target: /thoughts/feedback-loops
+          text: feedback loops
+    /thoughts/frame-problem:
+        - source: /toc/cognitive-sciences
+          target: /thoughts/frame-problem
+          text: Frame Problem
+    /thoughts/hackathons:
+        - source: /newsletters/issue-0
+          target: /thoughts/hackathons
+          text: hacking culture
+    /thoughts/infrastructure:
+        - source: /toc/communities-and-urban-planning
+          target: /thoughts/infrastructure
+          text: infrastructure
+    /thoughts/intelligence:
+        - source: /toc/cognitive-sciences
+          target: /thoughts/intelligence
+          text: Intelligence
+    /thoughts/labels-and-quantization:
+        - source: /thoughts/introductions
+          target: /thoughts/labels-and-quantization
+          text: labels
+    /thoughts/language-of-thought:
+        - source: /toc/cognitive-sciences
+          target: /thoughts/language-of-thought
+          text: Language of Thought
+    /thoughts/life-definition:
+        - source: /toc/cognitive-sciences
+          target: /thoughts/life-definition
+          text: Definition of Life
+    /thoughts/machine-learning:
+        - source: /toc/cognitive-sciences
+          target: /thoughts/machine-learning
+          text: Machine Learning
+    /thoughts/mind-body-problem:
+        - source: /toc/cognitive-sciences
+          target: /thoughts/mind-body-problem
+          text: The Mind Body Problem
+    /thoughts/mind-design:
+        - source: /toc/cognitive-sciences
+          target: /thoughts/mind-design
+          text: Mind Design
+    /thoughts/multiple-realization:
+        - source: /toc/cognitive-sciences
+          target: /thoughts/multiple-realization
+          text: Multiple Realization of Intelligence
+    /thoughts/representation:
+        - source: /toc/cognitive-sciences
+          target: /thoughts/representation
+          text: Representation
+    /thoughts/semantics:
+        - source: /toc/cognitive-sciences
+          target: /thoughts/semantics
+          text: Meaning and Semantics
+    /thoughts/social-graphs:
+        - source: /toc/communities-and-urban-planning
+          target: /thoughts/social-graphs
+          text: social-graphs
+    /thoughts/software-and-politics:
+        - source: /thoughts/acceleration
+          target: /thoughts/software-and-politics
+          text: software-and-politics
+    /thoughts/symbolic-systems:
+        - source: /toc/cognitive-sciences
+          target: /thoughts/symbolic-systems
+          text: Symbolic Systems
+    /thoughts/telerobotics:
+        - source: /toc/cognitive-sciences
+          target: /thoughts/telerobotics
+          text: Telerobotics
+    /thoughts/urban-planning:
+        - source: /toc/communities-and-urban-planning
+          target: /thoughts/urban-planning
+          text: urban-planning
+    /thoughts/value-setting:
+        - source: /thoughts/reading
+          target: /thoughts/value-setting
+          text: '*why* we need to build'
+    /thoughts/virtual-worlds:
+        - source: /toc/cognitive-sciences
+          target: /thoughts/virtual-worlds
+          text: Virtual Worlds
+    /thoughts/whoami:
+        - source: /newsletters/issue-2
+          target: /thoughts/whoami
+          text: '`$whoami`'
+    /toc/cognitive-sciences:
+        - source: /toc/directory
+          target: /toc/cognitive-sciences
+          text: Cognitive Sciences
+    /toc/communities-and-urban-planning:
+        - source: /toc/directory
+          target: /toc/communities-and-urban-planning
+          text: Communities and Urban Planning
+    /toc/education-and-epistemology:
+        - source: /toc/directory
+          target: /toc/education-and-epistemology
+          text: Education and Epistemology
+    /toc/personal:
+        - source: /toc/directory
+          target: /toc/personal
+          text: Personal
+    /toc/readings:
+        - source: /toc/directory
+          target: /toc/readings
+          text: Notes on articles and books
+    /toc/tech-and-society:
+        - source: /toc/directory
+          target: /toc/tech-and-society
+          text: Tech and Society
+    /toc/technical:
+        - source: /toc/directory
+          target: /toc/technical
+          text: Technical
+backlinks:
+    /books:
+        - source: /books
+          target: /newsletters/issue-2
+          text: reading
+    /newsletters/issue-4:
+        - source: /newsletters/issue-4
+          target: /thoughts/feedback-loops
+          text: Newsletter bit
+    /notwork:
+        - source: /notwork
+          target: /_index
+          text: non-work endeavours
+    /posts:
+        - source: /posts
+          target: /notwork/index
+          text: my blog
+    /posts/2020:
+        - source: /posts/2020
+          target: /newsletters/issue-0
+          text: reflection piece about my 2020
+    /posts/a-failure-resume:
+        - source: /posts/a-failure-resume
+          target: /thoughts/introductions
+          text: a-failure-resume
+    /posts/ai-systems:
+        - source: /posts/ai-systems
+          target: /thoughts/books/mindstorms
+          text: AI systems
+    /posts/bias-bug:
+        - source: /posts/bias-bug
+          target: /thoughts/books/design-justice
+          text: bias bug
+    /posts/collaborative-thinking:
+        - source: /posts/collaborative-thinking
+          target: /thoughts/articles/knowledge-distillation
+          text: collaborative-thinking
+    /posts/collaborative-thinking/:
+        - source: /posts/collaborative-thinking/
+          target: /posts/digital-gardening
+          text: base of knowledge
+    /posts/ctrlv-next:
+        - source: /posts/ctrlv-next
+          target: /thoughts/project-list
+          text: ctrl-v
+    /posts/digital-gardening:
+        - source: /posts/digital-gardening
+          target: /posts/collaborative-thinking
+          text: my digital garden
+    /posts/docker:
+        - source: /posts/docker
+          target: /toc/technical
+          text: docker
+    /posts/framing:
+        - source: /posts/framing
+          target: /thoughts/articles/pseudonymous-web
+          text: framing
+    /posts/hackathons:
+        - source: /posts/hackathons
+          target: /thoughts/academia
+          text: hackathons
+    /posts/hootsuite:
+        - source: /posts/hootsuite
+          target: /toc/personal
+          text: hootsuite
+    /posts/paid-oss:
+        - source: /posts/paid-oss
+          target: /toc/tech-and-society
+          text: paid-oss
+    /posts/reflect:
+        - source: /posts/reflect
+          target: /thoughts/project-list
+          text: reflect
+    /thoughts/academia:
+        - source: /thoughts/academia
+          target: /posts/collaborative-thinking
+          text: academia
+    /thoughts/acceleration:
+        - source: /thoughts/acceleration
+          target: /toc/education-and-epistemology
+          text: acceleration
+    /thoughts/articles/cities-and-programming:
+        - source: /thoughts/articles/cities-and-programming
+          target: /newsletters/issue-5
+          text: cities-and-programming
+    /thoughts/articles/city-is-not-a-tree:
+        - source: /thoughts/articles/city-is-not-a-tree
+          target: /thoughts/social-graphs
+          text: cities are not top-down hierarchies
+    /thoughts/articles/knowledge-distillation:
+        - source: /thoughts/articles/knowledge-distillation
+          target: /thoughts/books/mindstorms
+          text: knowledge distillers
+    /thoughts/articles/on-idolization:
+        - source: /thoughts/articles/on-idolization
+          target: /toc/readings
+          text: On Idolization
+    /thoughts/articles/pseudonymous-web:
+        - source: /thoughts/articles/pseudonymous-web
+          target: /newsletters/issue-5
+          text: pseudonymous-web
+    /thoughts/articles/the-ones-who-walk-from-omelas:
+        - source: /thoughts/articles/the-ones-who-walk-from-omelas
+          target: /thoughts/virtual-worlds
+          text: utopia
+    /thoughts/articles/to-live-in-their-utopia:
+        - source: /thoughts/articles/to-live-in-their-utopia
+          target: /thoughts/labels-and-quantization
+          text: to-live-in-their-utopia
+    /thoughts/attention-economy:
+        - source: /thoughts/attention-economy
+          target: /posts/paid-oss
+          text: Attention
+    /thoughts/books/design-justice:
+        - source: /thoughts/books/design-justice
+          target: /books/index
+          text: '**Design Justice**'
+    /thoughts/books/fctc:
+        - source: /thoughts/books/fctc
+          target: /books/index
+          text: '**From Counterculture to Cyberculture**'
+    /thoughts/books/mindstorms:
+        - source: /thoughts/books/mindstorms
+          target: /books/index
+          text: '**Mindstorms**'
+    /thoughts/books/mindstorms#Microworlds and simplification:
+        - source: /thoughts/books/mindstorms#Microworlds and simplification
+          target: /thoughts/software-and-politics
+          text: over simplification of user interfaces
+    /thoughts/building-in-public:
+        - source: /thoughts/building-in-public
+          target: /posts/digital-gardening
+          text: in public
+    /thoughts/catch22:
+        - source: /thoughts/catch22
+          target: /toc/tech-and-society
+          text: catch22
+    /thoughts/communities:
+        - source: /thoughts/communities
+          target: /posts/framing
+          text: group
+    /thoughts/contact-language:
+        - source: /thoughts/contact-language
+          target: /thoughts/books/fctc
+          text: Contact Language
+    /thoughts/creation-vs-maintenance:
+        - source: /thoughts/creation-vs-maintenance
+          target: /posts/paid-oss
+          text: Maintenance is less so.
+    /thoughts/digital-permanence:
+        - source: /thoughts/digital-permanence
+          target: /thoughts/ephemereal-content
+          text: digital permanence
+    /thoughts/embedded-ai:
+        - source: /thoughts/embedded-ai
+          target: /thoughts/symbolic-systems
+          text: heidegger
+    /thoughts/emergent-behaviour:
+        - source: /thoughts/emergent-behaviour
+          target: /thoughts/articles/cities-and-programming
+          text: emergent-behaviour
+    /thoughts/ephemereal-content:
+        - source: /thoughts/ephemereal-content
+          target: /posts/framing
+          text: ephemereal content
+    /thoughts/exploit-explore:
+        - source: /thoughts/exploit-explore
+          target: /posts/digital-gardening
+          text: exploit-explore
+    /thoughts/extended-mind:
+        - source: /thoughts/extended-mind
+          target: /toc/cognitive-sciences
+          text: Extended Mind
+    /thoughts/fault-tolerance:
+        - source: /thoughts/fault-tolerance
+          target: /thoughts/software-and-politics
+          text: error-handling
+    /thoughts/feedback-loops:
+        - source: /thoughts/feedback-loops
+          target: /thoughts/exploit-explore
+          text: feedback loops
+    /thoughts/frame-problem:
+        - source: /thoughts/frame-problem
+          target: /thoughts/embedded-ai
+          text: frame
+    /thoughts/hackathons:
+        - source: /thoughts/hackathons
+          target: /newsletters/issue-0
+          text: hacking culture
+    /thoughts/infrastructure:
+        - source: /thoughts/infrastructure
+          target: /thoughts/climate-tech
+          text: infrastructure
+    /thoughts/intelligence:
+        - source: /thoughts/intelligence
+          target: /thoughts/machine-learning
+          text: intelligence
+    /thoughts/introductions:
+        - source: /thoughts/introductions
+          target: /thoughts/communities
+          text: introductions
+    /thoughts/labels-and-quantization:
+        - source: /thoughts/labels-and-quantization
+          target: /thoughts/communities
+          text: labels-and-quantization
+    /thoughts/language-of-thought:
+        - source: /thoughts/language-of-thought
+          target: /thoughts/search-or-be-found
+          text: language-of-thought
+    /thoughts/life-definition:
+        - source: /thoughts/life-definition
+          target: /toc/cognitive-sciences
+          text: Definition of Life
+    /thoughts/machine-learning:
+        - source: /thoughts/machine-learning
+          target: /toc/cognitive-sciences
+          text: Machine Learning
+    /thoughts/mind-body-problem:
+        - source: /thoughts/mind-body-problem
+          target: /toc/cognitive-sciences
+          text: The Mind Body Problem
+    /thoughts/mind-design:
+        - source: /thoughts/mind-design
+          target: /toc/cognitive-sciences
+          text: Mind Design
+    /thoughts/multiple-realization:
+        - source: /thoughts/multiple-realization
+          target: /posts/ai-systems
+          text: multiple realization
+    /thoughts/paid-oss:
+        - source: /thoughts/paid-oss
+          target: /thoughts/urban-planning
+          text: open source
+    /thoughts/reading:
+        - source: /thoughts/reading
+          target: /posts/2020
+          text: reading
+    /thoughts/representation:
+        - source: /thoughts/representation
+          target: /thoughts/embedded-ai
+          text: representation
+    /thoughts/search-or-be-found:
+        - source: /thoughts/search-or-be-found
+          target: /toc/education-and-epistemology
+          text: search-or-be-found
+    /thoughts/semantics:
+        - source: /thoughts/semantics
+          target: /toc/cognitive-sciences
+          text: Meaning and Semantics
+    /thoughts/social-graphs:
+        - source: /thoughts/social-graphs
+          target: /thoughts/articles/city-is-not-a-tree
+          text: social media
+    /thoughts/software-and-politics:
+        - source: /thoughts/software-and-politics
+          target: /thoughts/acceleration
+          text: software-and-politics
+    /thoughts/symbolic-systems:
+        - source: /thoughts/symbolic-systems
+          target: /toc/cognitive-sciences
+          text: Symbolic Systems
+    /thoughts/telerobotics:
+        - source: /thoughts/telerobotics
+          target: /toc/cognitive-sciences
+          text: Telerobotics
+    /thoughts/urban-planning:
+        - source: /thoughts/urban-planning
+          target: /thoughts/articles/cities-and-programming
+          text: urban-planning
+    /thoughts/value-setting:
+        - source: /thoughts/value-setting
+          target: /thoughts/reading
+          text: '*why* we need to build'
+    /thoughts/virtual-worlds:
+        - source: /thoughts/virtual-worlds
+          target: /thoughts/articles/the-ones-who-walk-from-omelas
+          text: virtual worlds
+    /thoughts/whoami:
+        - source: /thoughts/whoami
+          target: /newsletters/issue-2
+          text: '`$whoami`'
+    /toc/cognitive-sciences:
+        - source: /toc/cognitive-sciences
+          target: /toc/directory
+          text: Cognitive Sciences
+    /toc/communities-and-urban-planning:
+        - source: /toc/communities-and-urban-planning
+          target: /toc/directory
+          text: Communities and Urban Planning
+    /toc/education-and-epistemology:
+        - source: /toc/education-and-epistemology
+          target: /toc/directory
+          text: Education and Epistemology
+    /toc/personal:
+        - source: /toc/personal
+          target: /toc/directory
+          text: Personal
+    /toc/readings:
+        - source: /toc/readings
+          target: /toc/directory
+          text: Notes on articles and books
+    /toc/tech-and-society:
+        - source: /toc/tech-and-society
+          target: /toc/directory
+          text: Tech and Society
+    /toc/technical:
+        - source: /toc/technical
+          target: /toc/directory
+          text: Technical
