@@ -92,25 +92,18 @@ func index(links []Link) (index Index) {
 	linkMap := make(map[string][]Link)
 	backlinkMap := make(map[string][]Link)
 	for _, l := range links {
-		bl := Link{
-			Source: l.Target,
-			Target: l.Source,
-			Text: l.Text,
-		}
-
 		// backlink (only if internal)
-
 		if _, ok := backlinkMap[l.Target]; ok {
-			backlinkMap[l.Target] = append(backlinkMap[l.Target], bl)
+			backlinkMap[l.Target] = append(backlinkMap[l.Target], l)
 		} else {
-			backlinkMap[l.Target] = []Link{bl}
+			backlinkMap[l.Target] = []Link{l}
 		}
 
 		// regular link
-		if val, ok := linkMap[l.Source]; ok {
-			val = append(val, l)
+		if _, ok := linkMap[l.Source]; ok {
+			linkMap[l.Source] = append(linkMap[l.Source], l)
 		} else {
-			linkMap[l.Target] = []Link{l}
+			linkMap[l.Source] = []Link{l}
 		}
 	}
 	index.Links = linkMap
