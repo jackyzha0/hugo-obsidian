@@ -4,7 +4,7 @@
   const index = {{$.Site.Data.linkIndex.index}}
   const links = {{$.Site.Data.linkIndex.links}}
   const curPage = {{ strings.TrimRight "/" .Page.RelPermalink }}
-  const pathColors = {{$.Site.Data.graphColors.paths}}
+  const pathColors = {{$.Site.Data.graphConfig.paths}}
 
   const parseIdsFromLinks = (links) => [...(new Set(links.flatMap(link => ([link.source, link.target]))))]
 
@@ -15,7 +15,7 @@
 
   const color = (d) => {
     if (d.id === curPage) {
-      return "{{.Site.Data.graphColors.base.activeNode}}"
+      return "{{.Site.Data.graphConfig.base.activeNode}}"
     }
 
     for (const pathColor of pathColors) {
@@ -26,7 +26,7 @@
       }
     }
 
-    return "{{.Site.Data.graphColors.base.node}}"
+    return "{{.Site.Data.graphConfig.base.node}}"
   }
 
   const drag = simulation => {
@@ -47,10 +47,12 @@
       d.fy = null;
     }
 
+    const enableDrag = {{$.Site.Data.graphConfig.enableDrag}}
+    const noop = () => {}
     return d3.drag()
-      .on("start", dragstarted)
-      .on("drag", dragged)
-      .on("end", dragended);
+      .on("start", enableDrag ? dragstarted : noop)
+      .on("drag", enableDrag ? dragged : noop)
+      .on("end", enableDrag ? dragended : noop);
   }
 
   const height = 400
@@ -70,33 +72,39 @@
     .attr("viewBox", [-width / 2, -height / 2, width, height]);
 
   // legend
-  const legend = [
-    {"Current": "{{.Site.Data.graphColors.base.activeNode}}"},
-    {"Note": "{{.Site.Data.graphColors.base.node}}"},
-    ...pathColors
-  ]
-  legend.forEach((legendEntry, i) => {
-    const key = Object.keys(legendEntry)[0]
-    const colour = legendEntry[key]
-    svg.append("circle").attr("cx", -width/2 + 20).attr("cy", height/2 - 30 * (i+1)).attr("r", 6).style("fill", colour)
-    svg.append("text").attr("x", -width/2 + 40).attr("y", height/2 - 30 * (i+1)).text(key).style("font-size", "15px").attr("alignment-baseline","middle")
-  })
+  const enableLegend = {{$.Site.Data.graphConfig.enableLegend}}
+  if (enableLegend) {
+    const legend = [
+      {"Current": "{{.Site.Data.graphConfig.base.activeNode}}"},
+      {"Note": "{{.Site.Data.graphConfig.base.node}}"},
+      ...pathColors
+    ]
+    legend.forEach((legendEntry, i) => {
+      const key = Object.keys(legendEntry)[0]
+      const colour = legendEntry[key]
+      svg.append("circle").attr("cx", -width/2 + 20).attr("cy", height/2 - 30 * (i+1)).attr("r", 6).style("fill", colour)
+      svg.append("text").attr("x", -width/2 + 40).attr("y", height/2 - 30 * (i+1)).text(key).style("font-size", "15px").attr("alignment-baseline","middle")
+    })
+  }
 
+  // draw links between nodes
   const link = svg.append("g")
     .selectAll("line")
     .data(data.links)
     .join("line")
     .attr("class", "link")
-    .attr("stroke", "{{.Site.Data.graphColors.base.link}}")
+    .attr("stroke", "{{.Site.Data.graphConfig.base.link}}")
     .attr("stroke-width", 2)
     .attr("data-source", d => d.source.id)
     .attr("data-target", d => d.target.id)
 
+  // svg groups
   const graphNode = svg.append("g")
     .selectAll("g")
     .data(data.nodes)
     .enter().append("g")
 
+  // draw individual nodes
   const node = graphNode.append("circle")
     .attr("class", "node")
     .attr("id", (d) => d.id)
@@ -114,7 +122,7 @@
       d3.selectAll(".node")
         .transition()
         .duration(100)
-        .attr("fill", "{{$.Site.Data.graphColors.base.inactiveNode}}")
+        .attr("fill", "{{$.Site.Data.graphConfig.base.inactiveNode}}")
 
       const neighbours = parseIdsFromLinks([...(index.links[d.id] || []), ...(index.backlinks[d.id] || [])])
       const neighbourNodes = d3.selectAll(".node").filter(d => neighbours.includes(d.id))
@@ -131,7 +139,7 @@
       links
         .transition()
         .duration(200)
-        .attr("stroke", "{{$.Site.Data.graphColors.base.activeLink}}")
+        .attr("stroke", "{{$.Site.Data.graphConfig.base.activeLink}}")
 
       // show text for self
       d3.select(this.parentNode)
@@ -152,7 +160,7 @@
       links
         .transition()
         .duration(200)
-        .attr("stroke", "{{$.Site.Data.graphColors.base.link}}")
+        .attr("stroke", "{{$.Site.Data.graphConfig.base.link}}")
 
       d3.select(this.parentNode)
         .select("text")
@@ -162,6 +170,7 @@
     })
     .call(drag(simulation));
 
+  // draw labels
   const labels = graphNode.append("text")
     .attr("dx", 12)
     .attr("dy", ".35em")
@@ -170,26 +179,29 @@
     .style("pointer-events", "none")
     .call(drag(simulation));
 
-  svg.call(d3.zoom()
-    .extent([[0, 0], [width, height]])
-    .scaleExtent([0.25, 4])
-    .on("zoom", ({transform}) => {
-      link.attr("transform", transform);
-      node.attr("transform", transform);
-      labels.attr("transform", transform);
-    }));
+  // set panning
+  const enableZoom = {{$.Site.Data.graphConfig.enableZoom}}
+  if (enableZoom) {
+    svg.call(d3.zoom()
+      .extent([[0, 0], [width, height]])
+      .scaleExtent([0.25, 4])
+      .on("zoom", ({transform}) => {
+        link.attr("transform", transform);
+        node.attr("transform", transform);
+        labels.attr("transform", transform);
+      }));
+  }
 
+  // progress the simulation
   simulation.on("tick", () => {
     link
       .attr("x1", d => d.source.x)
       .attr("y1", d => d.source.y)
       .attr("x2", d => d.target.x)
       .attr("y2", d => d.target.y);
-
     node
       .attr("cx", d => d.x)
       .attr("cy", d => d.y);
-
     labels
       .attr("x", d => d.x)
       .attr("y", d => d.y);
