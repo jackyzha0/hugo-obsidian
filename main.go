@@ -111,6 +111,7 @@ func index(links []Link) (index Index) {
 	return index
 }
 
+const message = "# THIS FILE WAS GENERATED using github.com/jackyzha0/hugo-obsidian\n# DO NOT EDIT\n"
 func write(links []Link, out string) error {
 	index := index(links)
 	resStruct := struct{
@@ -125,7 +126,7 @@ func write(links []Link, out string) error {
 		return mErr
 	}
 
-	writeErr := ioutil.WriteFile(path.Join(out, "linkIndex.yaml"), marshalledIndex, 0644)
+	writeErr := ioutil.WriteFile(path.Join(out, "linkIndex.yaml"), append([]byte(message), marshalledIndex...), 0644)
 	if writeErr != nil {
 		return writeErr
 	}
