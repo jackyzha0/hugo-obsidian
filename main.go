@@ -77,7 +77,7 @@ func walk(root, ext string) (res []Link) {
 func filter(links []Link) (res []Link) {
 	for _, l := range links {
 		// filter external and non-md
-		isInternal := strings.HasPrefix(l.Target, "/")
+		isInternal := !strings.HasPrefix(l.Target, "http")
 		isMarkdown := filepath.Ext(l.Target) == "" || filepath.Ext(l.Target) == ".md"
 		if isInternal && isMarkdown {
 			res = append(res, l)
