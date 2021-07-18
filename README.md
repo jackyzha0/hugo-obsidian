@@ -19,12 +19,39 @@ hugo-obsidian -input=content -output=data
 
 ### Example Usage (GitHub Action)
 
+Add 'Build Link Index' as a build step in your workflow file (e.g. `.github/workflows/deploy.yaml`)
+```yaml
+...
 
+jobs:
+  deploy:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build Link Index
+        uses: jackyzha0/hugo-obsidian@v1.4
+        with:
+          input: content # input folder
+          output: data   # output folder
+      ...
+```
 
 ## Hugo Partial
+To then embed this information in your Hugo site, you can copy and use the provided partials in `/partials`. Graph provides a graph view of all nodes and links and Backlinks provides a list of pages that link to this page. 
 
+To start, create a `graphConfig.yaml` file in `/data` in your Hugo folder. This will be our main point of configuration for the graph partial.
+
+Then, in one of your Hugo templates, do something like the following to render the graph.
+
+```html
+<div id="graph-container">
+    {{partial "graph_partial.html" .}}
+</div>
+```
 
 ### Configuration
+Example:
+
 ```yaml
 enableLegend: false
 enableDrag: true
@@ -33,8 +60,7 @@ base:
   node: "#284b63"
   activeNode: "#f28482"
   inactiveNode: "#a8b3bd"
-  hoverNode: "#afbfc9"
-  link: "#aeb4b8"
+  link: "#babdbf"
   activeLink: "#5a7282"
 paths:
   - /toc: "#4388cc"
