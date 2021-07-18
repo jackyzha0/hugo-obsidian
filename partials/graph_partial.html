@@ -23,7 +23,7 @@
   }
 
   const color = (d) => {
-    if (d.id === curPage) {
+    if (d.id === curPage || (d.id === "/" && curPage === "")) {
       return "var(--g-node-active)"
     }
 

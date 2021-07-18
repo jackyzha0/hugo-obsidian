@@ -32,6 +32,13 @@ func hugoPathTrim(source string) string {
 	return strings.TrimSuffix(strings.TrimSuffix(source, "/index"), "_index")
 }
 
+func processTarget(source string) string {
+	if strings.HasPrefix(source, "/") {
+		return strings.TrimSuffix(source, ".md")
+	}
+	return "/" + strings.TrimSuffix(source, ".md")
+}
+
 // parse single file for links
 func parse(dir, pathPrefix string) []Link {
 	// read file
@@ -47,7 +54,7 @@ func parse(dir, pathPrefix string) []Link {
 		fmt.Printf("  %s\n", trim(target, pathPrefix, ".md"))
 		links = append(links, Link{
 			Source: hugoPathTrim(trim(dir, pathPrefix, ".md")),
-			Target: strings.Split(target, "#")[0],
+			Target: strings.Split(processTarget(target), "#")[0],
 			Text: text,
 		})
 	}
