@@ -29,7 +29,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Build Link Index
-        uses: jackyzha0/hugo-obsidian@v1.4
+        uses: jackyzha0/hugo-obsidian@v2.0
         with:
           input: content # input folder
           output: data   # output folder
