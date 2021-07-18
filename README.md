@@ -1,4 +1,6 @@
 # Obsidian Link Scrapper
+Used by [Quartz](https://github.com/jackyzha0/quartz)
+
 This repository comes to you in two parts.
 
 1. GitHub Action (scrapes links into a `.yml` file)
