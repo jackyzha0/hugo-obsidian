@@ -33,10 +33,17 @@ func hugoPathTrim(source string) string {
 }
 
 func processTarget(source string) string {
+	if !isInternal(source) {
+		return source
+	}
 	if strings.HasPrefix(source, "/") {
 		return strings.TrimSuffix(source, ".md")
 	}
 	return "/" + strings.TrimSuffix(source, ".md")
+}
+
+func isInternal(link string) bool {
+	return !strings.HasPrefix(link, "http")
 }
 
 // parse single file for links
@@ -51,7 +58,7 @@ func parse(dir, pathPrefix string) []Link {
 	var links []Link
 	fmt.Printf("%s\n", trim(dir, pathPrefix, ".md"))
 	for text, target := range md.GetAllLinks(string(bytes)) {
-		fmt.Printf("  %s\n", trim(target, pathPrefix, ".md"))
+		fmt.Printf("  %s\n", hugoPathTrim(trim(dir, pathPrefix, ".md")))
 		links = append(links, Link{
 			Source: hugoPathTrim(trim(dir, pathPrefix, ".md")),
 			Target: strings.Split(processTarget(target), "#")[0],
@@ -84,9 +91,8 @@ func walk(root, ext string) (res []Link) {
 func filter(links []Link) (res []Link) {
 	for _, l := range links {
 		// filter external and non-md
-		isInternal := !strings.HasPrefix(l.Target, "http")
 		isMarkdown := filepath.Ext(l.Target) == "" || filepath.Ext(l.Target) == ".md"
-		if isInternal && isMarkdown {
+		if isInternal(l.Target) && isMarkdown {
 			res = append(res, l)
 		}
 	}
