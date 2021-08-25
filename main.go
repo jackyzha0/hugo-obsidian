@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"path"
 	"path/filepath"
+	"regexp"
 	"strings"
 )
 
@@ -23,6 +24,13 @@ type Index struct {
 	Links LinkTable
 	Backlinks LinkTable
 }
+
+type Content struct {
+	Title string
+	Content string
+}
+
+type ContentIndex = map[string]Content
 
 func trim(source, prefix, suffix string) string {
 	return strings.TrimPrefix(strings.TrimSuffix(source, suffix), prefix)
@@ -58,25 +66,55 @@ func parse(dir, pathPrefix string) []Link {
 	var links []Link
 	fmt.Printf("%s\n", trim(dir, pathPrefix, ".md"))
 	for text, target := range md.GetAllLinks(string(bytes)) {
-		fmt.Printf("  %s\n", hugoPathTrim(trim(dir, pathPrefix, ".md")))
+		target := strings.Split(processTarget(target), "#")[0]
+		fmt.Printf("  %s\n", target)
 		links = append(links, Link{
 			Source: hugoPathTrim(trim(dir, pathPrefix, ".md")),
-			Target: strings.Split(processTarget(target), "#")[0],
+			Target: target,
 			Text: text,
 		})
 	}
 	return links
 }
 
+func getText(dir string) string {
+	// read file
+	bytes, err := ioutil.ReadFile(dir)
+	if err != nil {
+		panic(err)
+	}
+
+	return string(bytes)
+}
+
 // recursively walk directory and return all files with given extension
-func walk(root, ext string) (res []Link) {
+func walk(root, ext string, index bool) (res []Link, i ContentIndex) {
 	println(root)
+	i = make(ContentIndex)
+	titleRegex := regexp.MustCompile(`title: "(.*)"`)
+
 	err := filepath.WalkDir(root, func(s string, d fs.DirEntry, e error) error {
 		if e != nil {
 			return e
 		}
 		if filepath.Ext(d.Name()) == ext {
 			res = append(res, parse(s, root)...)
+			if index {
+				text := getText(s)
+				matches := titleRegex.FindStringSubmatch(text)
+				var title string
+				if len(matches) > 1 {
+					title = matches[1]
+				} else {
+					title = "Untitled Page"
+				}
+
+				adjustedPath := hugoPathTrim(trim(s, root, ".md"))
+				i[adjustedPath] = Content{
+					Title: title,
+					Content: text,
+				}
+			}
 		}
 		return nil
 	})
@@ -84,7 +122,7 @@ func walk(root, ext string) (res []Link) {
 		panic(err)
 	}
 	fmt.Printf("parsed %d total links \n", len(res))
-	return res
+	return res, i
 }
 
 // filter out certain links (e.g. to media)
@@ -125,7 +163,7 @@ func index(links []Link) (index Index) {
 }
 
 const message = "# THIS FILE WAS GENERATED using github.com/jackyzha0/hugo-obsidian\n# DO NOT EDIT\n"
-func write(links []Link, out string) error {
+func write(links []Link, contentIndex ContentIndex, toIndex bool, out string) error {
 	index := index(links)
 	resStruct := struct{
 		Index Index
@@ -143,16 +181,30 @@ func write(links []Link, out string) error {
 	if writeErr != nil {
 		return writeErr
 	}
+
+	if toIndex {
+		marshalledContentIndex, mcErr := yaml.Marshal(&contentIndex)
+		if mcErr != nil {
+			return mcErr
+		}
+
+		writeErr = ioutil.WriteFile(path.Join(out, "contentIndex.yaml"), append([]byte(message), marshalledContentIndex...), 0644)
+		if writeErr != nil {
+			return writeErr
+		}
+	}
+
 	return nil
 }
 
 func main() {
 	in := flag.String("input", ".", "Input Directory")
 	out := flag.String("output", ".", "Output Directory")
+	index := flag.Bool("index", false, "Whether to index the content")
 	flag.Parse()
-	l := walk(*in, ".md")
+	l, i := walk(*in, ".md", *index)
 	f := filter(l)
-	err := write(f, *out)
+	err := write(f, i, *index, *out)
 	if err != nil {
 		panic(err)
 	}
