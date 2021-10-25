@@ -69,7 +69,7 @@ func parse(dir, pathPrefix string) []Link {
 		target := strings.Split(processTarget(target), "#")[0]
 		fmt.Printf("  %s\n", target)
 		links = append(links, Link{
-			Source: hugoPathTrim(trim(dir, pathPrefix, ".md")),
+			Source: filepath.ToSlash(hugoPathTrim(trim(dir, pathPrefix, ".md"))),
 			Target: target,
 			Text: text,
 		})
