@@ -107,7 +107,8 @@ func walk(root, ext string, index bool) (res []Link, i ContentIndex) {
 
 				frontmatter, body, err := m.Parse(strings.NewReader(text))
 				if err != nil {
-					panic(err)
+					frontmatter = map[string]interface{}{}
+					body = text
 				}
 
 				var title string
