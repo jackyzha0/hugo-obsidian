@@ -3,13 +3,13 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/gernest/front"
 	md "github.com/nikitavoloboev/markdown-parser"
 	"gopkg.in/yaml.v3"
 	"io/fs"
 	"io/ioutil"
 	"path"
 	"path/filepath"
-	"regexp"
 	"strings"
 )
 
@@ -91,7 +91,10 @@ func getText(dir string) string {
 func walk(root, ext string, index bool) (res []Link, i ContentIndex) {
 	println(root)
 	i = make(ContentIndex)
-	titleRegex := regexp.MustCompile(`title: "(.*)"`)
+
+	m := front.NewMatter()
+	m.Handle("---", front.YAMLHandler)
+	nPrivate := 0
 
 	err := filepath.WalkDir(root, func(s string, d fs.DirEntry, e error) error {
 		if e != nil {
@@ -101,18 +104,29 @@ func walk(root, ext string, index bool) (res []Link, i ContentIndex) {
 			res = append(res, parse(s, root)...)
 			if index {
 				text := getText(s)
-				matches := titleRegex.FindStringSubmatch(text)
+
+				frontmatter, body, err := m.Parse(strings.NewReader(text))
+				if err != nil {
+					frontmatter = map[string]interface{}{}
+					body = text
+				}
+
 				var title string
-				if len(matches) > 1 {
-					title = matches[1]
+				if parsedTitle, ok := frontmatter["title"]; ok {
+					title = parsedTitle.(string)
 				} else {
 					title = "Untitled Page"
 				}
 
-				adjustedPath := hugoPathTrim(trim(s, root, ".md"))
-				i[adjustedPath] = Content{
-					Title: title,
-					Content: text,
+				// check if page is private
+				if parsedPrivate, ok := frontmatter["draft"]; !ok || !parsedPrivate.(bool) {
+					adjustedPath := hugoPathTrim(trim(s, root, ".md"))
+					i[adjustedPath] = Content{
+						Title: title,
+						Content: body,
+					}
+				} else {
+					nPrivate++
 				}
 			}
 		}
@@ -121,7 +135,8 @@ func walk(root, ext string, index bool) (res []Link, i ContentIndex) {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("parsed %d total links \n", len(res))
+	fmt.Printf("Ignored %d private files \n", nPrivate)
+	fmt.Printf("Parsed %d total links \n", len(res))
 	return res, i
 }
 
@@ -134,7 +149,7 @@ func filter(links []Link) (res []Link) {
 			res = append(res, l)
 		}
 	}
-	fmt.Printf("removed %d external and non-markdown links\n", len(links) - len(res))
+	fmt.Printf("Removed %d external and non-markdown links\n", len(links) - len(res))
 	return res
 }
 
@@ -162,7 +177,7 @@ func index(links []Link) (index Index) {
 	return index
 }
 
-const message = "# THIS FILE WAS GENERATED using github.com/jackyzha0/hugo-obsidian\n# DO NOT EDIT\n"
+const message = "# THIS FILE WAS GENERATED USING github.com/jackyzha0/hugo-obsidian\n# DO NOT EDIT\n"
 func write(links []Link, contentIndex ContentIndex, toIndex bool, out string) error {
 	index := index(links)
 	resStruct := struct{
