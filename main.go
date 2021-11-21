@@ -1,17 +1,29 @@
 package main
 
 import (
+	"bytes"
 	"flag"
 	"fmt"
 	"github.com/gernest/front"
-	md "github.com/nikitavoloboev/markdown-parser"
 	"gopkg.in/yaml.v3"
 	"io/fs"
 	"io/ioutil"
 	"path"
 	"path/filepath"
 	"strings"
+
+	"github.com/PuerkitoBio/goquery"
+	wikilink "github.com/abhinav/goldmark-wikilink"
+	"github.com/yuin/goldmark"
 )
+
+
+var md goldmark.Markdown
+func init() {
+	md = goldmark.New(
+		goldmark.WithExtensions(&wikilink.Extender{}),
+	)
+}
 
 type Link struct {
 	Source string
@@ -47,7 +59,7 @@ func processTarget(source string) string {
 	if strings.HasPrefix(source, "/") {
 		return strings.TrimSuffix(source, ".md")
 	}
-	return "/" + strings.TrimSuffix(source, ".md")
+	return "/" + strings.TrimSuffix(strings.TrimSuffix(source, ".html"), ".md")
 }
 
 func isInternal(link string) bool {
@@ -57,23 +69,44 @@ func isInternal(link string) bool {
 // parse single file for links
 func parse(dir, pathPrefix string) []Link {
 	// read file
-	bytes, err := ioutil.ReadFile(dir)
+	source, err := ioutil.ReadFile(dir)
 	if err != nil {
 		panic(err)
 	}
 
 	// parse md
 	var links []Link
-	fmt.Printf("%s\n", trim(dir, pathPrefix, ".md"))
-	for text, target := range md.GetAllLinks(string(bytes)) {
-		target := strings.Split(processTarget(target), "#")[0]
-		fmt.Printf("  %s\n", target)
+	fmt.Printf("[Parsing note] %s\n", trim(dir, pathPrefix, ".md"))
+
+	var buf bytes.Buffer
+	if err := md.Convert(source, &buf); err != nil {
+		panic(err)
+	}
+
+	doc, err := goquery.NewDocumentFromReader(&buf)
+	var n int
+	doc.Find("a").Each(func(i int, s *goquery.Selection) {
+		text := strings.TrimSpace(s.Text())
+		target, ok := s.Attr("href")
+		if !ok {
+			target = "#"
+		}
+
+		target = strings.Replace(target, "%20", " ", -1)
+		target = strings.Split(processTarget(target), "#")[0]
+		target = strings.TrimSpace(target)
+		target = strings.Replace(target, " ", "-", -1)
+
+		fmt.Printf("  '%s' => %s\n", text, target)
 		links = append(links, Link{
 			Source: filepath.ToSlash(hugoPathTrim(trim(dir, pathPrefix, ".md"))),
 			Target: target,
 			Text: text,
 		})
-	}
+		n++
+	})
+	fmt.Printf(":: %d links\n", n)
+
 	return links
 }
 
@@ -120,7 +153,7 @@ func walk(root, ext string, index bool) (res []Link, i ContentIndex) {
 
 				// check if page is private
 				if parsedPrivate, ok := frontmatter["draft"]; !ok || !parsedPrivate.(bool) {
-					adjustedPath := hugoPathTrim(trim(s, root, ".md"))
+					adjustedPath := strings.Replace(hugoPathTrim(trim(s, root, ".md")), " ", "-", -1)
 					i[adjustedPath] = Content{
 						Title: title,
 						Content: body,
