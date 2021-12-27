@@ -1,24 +1,17 @@
 package main
 
 import (
-	"bytes"
 	"flag"
-	"fmt"
-	"github.com/gernest/front"
-	"gopkg.in/yaml.v3"
-	"io/fs"
-	"io/ioutil"
-	"path"
-	"path/filepath"
-	"strings"
-
-	"github.com/PuerkitoBio/goquery"
+	"github.com/BurntSushi/toml"
 	wikilink "github.com/abhinav/goldmark-wikilink"
 	"github.com/yuin/goldmark"
+	"io/ioutil"
+	"path/filepath"
+	"time"
 )
 
-
 var md goldmark.Markdown
+
 func init() {
 	md = goldmark.New(
 		goldmark.WithExtensions(&wikilink.Extender{}),
@@ -33,224 +26,54 @@ type Link struct {
 
 type LinkTable = map[string][]Link
 type Index struct {
-	Links LinkTable
+	Links     LinkTable
 	Backlinks LinkTable
 }
 
 type Content struct {
-	Title string
+	Title   string
 	Content string
+	LastModified time.Time
 }
 
 type ContentIndex = map[string]Content
 
-func trim(source, prefix, suffix string) string {
-	return strings.TrimPrefix(strings.TrimSuffix(source, suffix), prefix)
+type ConfigTOML struct {
+	IgnoredFiles []string `toml:"ignoreFiles"`
 }
 
-func hugoPathTrim(source string) string {
-	return strings.TrimSuffix(strings.TrimSuffix(source, "/index"), "_index")
-}
+func getIgnoredFiles(base string) (res map[string]struct{}) {
+	res = make(map[string]struct{})
 
-func processTarget(source string) string {
-	if !isInternal(source) {
-		return source
-	}
-	if strings.HasPrefix(source, "/") {
-		return strings.TrimSuffix(source, ".md")
-	}
-	return "/" + strings.TrimSuffix(strings.TrimSuffix(source, ".html"), ".md")
-}
-
-func isInternal(link string) bool {
-	return !strings.HasPrefix(link, "http")
-}
-
-// parse single file for links
-func parse(dir, pathPrefix string) []Link {
-	// read file
-	source, err := ioutil.ReadFile(dir)
+	source, err := ioutil.ReadFile(base + "/config.toml")
 	if err != nil {
-		panic(err)
+		return res
 	}
 
-	// parse md
-	var links []Link
-	fmt.Printf("[Parsing note] %s\n", trim(dir, pathPrefix, ".md"))
-
-	var buf bytes.Buffer
-	if err := md.Convert(source, &buf); err != nil {
-		panic(err)
+	var config ConfigTOML
+	if _, err := toml.Decode(string(source), &config); err != nil {
+		return res
 	}
 
-	doc, err := goquery.NewDocumentFromReader(&buf)
-	var n int
-	doc.Find("a").Each(func(i int, s *goquery.Selection) {
-		text := strings.TrimSpace(s.Text())
-		target, ok := s.Attr("href")
-		if !ok {
-			target = "#"
-		}
-
-		target = strings.Replace(target, "%20", " ", -1)
-		target = strings.Split(processTarget(target), "#")[0]
-		target = strings.TrimSpace(target)
-		target = strings.Replace(target, " ", "-", -1)
-
-		fmt.Printf("  '%s' => %s\n", text, target)
-		links = append(links, Link{
-			Source: filepath.ToSlash(hugoPathTrim(trim(dir, pathPrefix, ".md"))),
-			Target: target,
-			Text: text,
-		})
-		n++
-	})
-	fmt.Printf(":: %d links\n", n)
-
-	return links
-}
-
-func getText(dir string) string {
-	// read file
-	bytes, err := ioutil.ReadFile(dir)
-	if err != nil {
-		panic(err)
-	}
-
-	return string(bytes)
-}
-
-// recursively walk directory and return all files with given extension
-func walk(root, ext string, index bool) (res []Link, i ContentIndex) {
-	println(root)
-	i = make(ContentIndex)
-
-	m := front.NewMatter()
-	m.Handle("---", front.YAMLHandler)
-	nPrivate := 0
-
-	err := filepath.WalkDir(root, func(s string, d fs.DirEntry, e error) error {
-		if e != nil {
-			return e
-		}
-		if filepath.Ext(d.Name()) == ext {
-			res = append(res, parse(s, root)...)
-			if index {
-				text := getText(s)
-
-				frontmatter, body, err := m.Parse(strings.NewReader(text))
-				if err != nil {
-					frontmatter = map[string]interface{}{}
-					body = text
-				}
-
-				var title string
-				if parsedTitle, ok := frontmatter["title"]; ok {
-					title = parsedTitle.(string)
-				} else {
-					title = "Untitled Page"
-				}
-
-				// check if page is private
-				if parsedPrivate, ok := frontmatter["draft"]; !ok || !parsedPrivate.(bool) {
-					adjustedPath := strings.Replace(hugoPathTrim(trim(s, root, ".md")), " ", "-", -1)
-					i[adjustedPath] = Content{
-						Title: title,
-						Content: body,
-					}
-				} else {
-					nPrivate++
-				}
-			}
-		}
-		return nil
-	})
-	if err != nil {
-		panic(err)
-	}
-	fmt.Printf("Ignored %d private files \n", nPrivate)
-	fmt.Printf("Parsed %d total links \n", len(res))
-	return res, i
-}
-
-// filter out certain links (e.g. to media)
-func filter(links []Link) (res []Link) {
-	for _, l := range links {
-		// filter external and non-md
-		isMarkdown := filepath.Ext(l.Target) == "" || filepath.Ext(l.Target) == ".md"
-		if isInternal(l.Target) && isMarkdown {
-			res = append(res, l)
+	for _, glb := range config.IgnoredFiles {
+		matches, _ := filepath.Glob(base + glb)
+		for _, match := range matches {
+			res[match] = struct{}{}
 		}
 	}
-	fmt.Printf("Removed %d external and non-markdown links\n", len(links) - len(res))
+
 	return res
-}
-
-// constructs index from links
-func index(links []Link) (index Index) {
-	linkMap := make(map[string][]Link)
-	backlinkMap := make(map[string][]Link)
-	for _, l := range links {
-		// backlink (only if internal)
-		if _, ok := backlinkMap[l.Target]; ok {
-			backlinkMap[l.Target] = append(backlinkMap[l.Target], l)
-		} else {
-			backlinkMap[l.Target] = []Link{l}
-		}
-
-		// regular link
-		if _, ok := linkMap[l.Source]; ok {
-			linkMap[l.Source] = append(linkMap[l.Source], l)
-		} else {
-			linkMap[l.Source] = []Link{l}
-		}
-	}
-	index.Links = linkMap
-	index.Backlinks = backlinkMap
-	return index
-}
-
-const message = "# THIS FILE WAS GENERATED USING github.com/jackyzha0/hugo-obsidian\n# DO NOT EDIT\n"
-func write(links []Link, contentIndex ContentIndex, toIndex bool, out string) error {
-	index := index(links)
-	resStruct := struct{
-		Index Index
-		Links []Link
-	}{
-		Index: index,
-		Links: links,
-	}
-	marshalledIndex, mErr := yaml.Marshal(&resStruct)
-	if mErr != nil {
-		return mErr
-	}
-
-	writeErr := ioutil.WriteFile(path.Join(out, "linkIndex.yaml"), append([]byte(message), marshalledIndex...), 0644)
-	if writeErr != nil {
-		return writeErr
-	}
-
-	if toIndex {
-		marshalledContentIndex, mcErr := yaml.Marshal(&contentIndex)
-		if mcErr != nil {
-			return mcErr
-		}
-
-		writeErr = ioutil.WriteFile(path.Join(out, "contentIndex.yaml"), append([]byte(message), marshalledContentIndex...), 0644)
-		if writeErr != nil {
-			return writeErr
-		}
-	}
-
-	return nil
 }
 
 func main() {
 	in := flag.String("input", ".", "Input Directory")
 	out := flag.String("output", ".", "Output Directory")
+	root := flag.String("root", "..", "Root Directory (for config parsing)")
 	index := flag.Bool("index", false, "Whether to index the content")
 	flag.Parse()
-	l, i := walk(*in, ".md", *index)
+
+	ignoreBlobs := getIgnoredFiles(*root)
+	l, i := walk(*in, ".md", *index, ignoreBlobs)
 	f := filter(l)
 	err := write(f, i, *index, *out)
 	if err != nil {
