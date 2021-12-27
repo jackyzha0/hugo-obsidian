@@ -2,12 +2,12 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"github.com/BurntSushi/toml"
 	wikilink "github.com/abhinav/goldmark-wikilink"
 	"github.com/yuin/goldmark"
 	"io/ioutil"
 	"path/filepath"
+	"time"
 )
 
 var md goldmark.Markdown
@@ -33,6 +33,7 @@ type Index struct {
 type Content struct {
 	Title   string
 	Content string
+	LastModified time.Time
 }
 
 type ContentIndex = map[string]Content
@@ -61,7 +62,6 @@ func getIgnoredFiles(base string) (res map[string]struct{}) {
 		}
 	}
 
-	fmt.Printf("%v\n", res)
 	return res
 }
 

@@ -5,6 +5,7 @@ import (
 	"github.com/gernest/front"
 	"io/fs"
 	"io/ioutil"
+	"os"
 	"path/filepath"
 	"strings"
 )
@@ -24,6 +25,7 @@ func walk(root, ext string, index bool, ignorePaths map[string]struct{}) (res []
 		}
 		if _, ignored := ignorePaths[s]; ignored {
 			fmt.Printf("[Ignored] %s\n", d.Name())
+			nPrivate++
 		} else if filepath.Ext(d.Name()) == ext {
 			res = append(res, parse(s, root)...)
 			if index {
@@ -44,12 +46,15 @@ func walk(root, ext string, index bool, ignorePaths map[string]struct{}) (res []
 
 				// check if page is private
 				if parsedPrivate, ok := frontmatter["draft"]; !ok || !parsedPrivate.(bool) {
+					info, _ := os.Stat(s)
 					adjustedPath := strings.Replace(hugoPathTrim(trim(s, root, ".md")), " ", "-", -1)
 					i[adjustedPath] = Content{
+						LastModified: info.ModTime(),
 						Title:   title,
 						Content: body,
 					}
 				} else {
+					fmt.Printf("[Ignored] %s\n", d.Name())
 					nPrivate++
 				}
 			}
