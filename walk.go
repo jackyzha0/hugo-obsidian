@@ -10,7 +10,7 @@ import (
 )
 
 // recursively walk directory and return all files with given extension
-func walk(root, ext string, index bool) (res []Link, i ContentIndex) {
+func walk(root, ext string, index bool, ignorePaths map[string]struct{}) (res []Link, i ContentIndex) {
 	fmt.Printf("Scraping %s\n", root)
 	i = make(ContentIndex)
 
@@ -22,7 +22,9 @@ func walk(root, ext string, index bool) (res []Link, i ContentIndex) {
 		if e != nil {
 			return e
 		}
-		if filepath.Ext(d.Name()) == ext {
+		if _, ignored := ignorePaths[s]; ignored {
+			fmt.Printf("[Ignored] %s\n", d.Name())
+		} else if filepath.Ext(d.Name()) == ext {
 			res = append(res, parse(s, root)...)
 			if index {
 				text := getText(s)
