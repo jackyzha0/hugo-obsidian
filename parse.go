@@ -40,10 +40,12 @@ func parse(dir, pathPrefix string) []Link {
 		target = strings.TrimSpace(target)
 		target = strings.Replace(target, " ", "-", -1)
 
+		source := filepath.ToSlash(hugoPathTrim(trim(dir, pathPrefix, ".md")))
+
 		fmt.Printf("  '%s' => %s\n", text, target)
 		links = append(links, Link{
-			Source: filepath.ToSlash(hugoPathTrim(trim(dir, pathPrefix, ".md"))),
-			Target: target,
+			Source: UnicodeSanitize(source),
+			Target: UnicodeSanitize(target),
 			Text:   text,
 		})
 		n++

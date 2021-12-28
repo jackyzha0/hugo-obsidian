@@ -47,7 +47,7 @@ func walk(root, ext string, index bool, ignorePaths map[string]struct{}) (res []
 				// check if page is private
 				if parsedPrivate, ok := frontmatter["draft"]; !ok || !parsedPrivate.(bool) {
 					info, _ := os.Stat(s)
-					adjustedPath := strings.Replace(hugoPathTrim(trim(s, root, ".md")), " ", "-", -1)
+					adjustedPath := UnicodeSanitize(strings.Replace(hugoPathTrim(trim(s, root, ".md")), " ", "-", -1))
 					i[adjustedPath] = Content{
 						LastModified: info.ModTime(),
 						Title:   title,
