@@ -1,38 +1,37 @@
 package main
 
 import (
-	"gopkg.in/yaml.v3"
+	"encoding/json"
 	"io/ioutil"
 	"path"
 )
 
-const message = "# THIS FILE WAS GENERATED USING github.com/jackyzha0/hugo-obsidian\n# DO NOT EDIT\n"
 func write(links []Link, contentIndex ContentIndex, toIndex bool, out string) error {
 	index := index(links)
 	resStruct := struct {
-		Index Index
-		Links []Link
+		Index Index 	`json:"index"`
+		Links []Link 	`json:"links"`
 	}{
 		Index: index,
 		Links: links,
 	}
-	marshalledIndex, mErr := yaml.Marshal(&resStruct)
+	marshalledIndex, mErr := json.MarshalIndent(&resStruct, "", "  ")
 	if mErr != nil {
 		return mErr
 	}
 
-	writeErr := ioutil.WriteFile(path.Join(out, "linkIndex.yaml"), append([]byte(message), marshalledIndex...), 0644)
+	writeErr := ioutil.WriteFile(path.Join(out, "linkIndex.json"), marshalledIndex, 0644)
 	if writeErr != nil {
 		return writeErr
 	}
 
 	if toIndex {
-		marshalledContentIndex, mcErr := yaml.Marshal(&contentIndex)
+		marshalledContentIndex, mcErr := json.MarshalIndent(&contentIndex, "", "  ")
 		if mcErr != nil {
 			return mcErr
 		}
 
-		writeErr = ioutil.WriteFile(path.Join(out, "contentIndex.yaml"), append([]byte(message), marshalledContentIndex...), 0644)
+		writeErr = ioutil.WriteFile(path.Join(out, "contentIndex.json"), marshalledContentIndex, 0644)
 		if writeErr != nil {
 			return writeErr
 		}

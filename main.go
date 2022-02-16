@@ -19,21 +19,22 @@ func init() {
 }
 
 type Link struct {
-	Source string
-	Target string
-	Text   string
+	Source string `json:"source"`
+	Target string `json:"target"`
+	Text   string `json:"text"`
 }
 
 type LinkTable = map[string][]Link
 type Index struct {
-	Links     LinkTable
-	Backlinks LinkTable
+	Links     LinkTable `json:"links"`
+	Backlinks LinkTable `json:"backlinks"`
 }
 
 type Content struct {
-	Title   string
-	Content string
-	LastModified time.Time
+	Title   string			`json:"title"`
+	Content string			`json:"content"`
+	LastModified time.Time	`json:"lastmodified"`
+	Tags 	[]string		`json:"tags"`
 }
 
 type ContentIndex = map[string]Content
