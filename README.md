@@ -3,13 +3,13 @@ Used by [Quartz](https://github.com/jackyzha0/quartz)
 
 This repository comes to you in two parts.
 
-1. GitHub Action (scrapes links into a `.yml` file)
-2. Hugo Partial (turns `.yml` file into graphs and tables)
+1. GitHub Action (scrapes links into a `.json` file)
+2. Hugo Partial (turns `.json` file into graphs and tables)
 
 ## GitHub Action
-GitHub action and binary to scrape [Obsidian](http://obsidian.md/) vault for links and exposes them as a `.yml` file for easy consumption by [Hugo](https://gohugo.io/).
+GitHub action and binary to scrape [Obsidian](http://obsidian.md/) vault for links and exposes them as a `.json` file for easy consumption by [Hugo](https://gohugo.io/).
 ### Example Usage (Binary)
-Read Markdown from the `/content` folder and place the resulting `linkIndex.yaml` (and `contentIndex.yaml` if the `index` flag is enabled) into `/data`
+Read Markdown from the `/content` folder and place the resulting `linkIndex.json` (and `contentIndex.yaml` if the `index` flag is enabled) into `/data`
 
 ```shell
 # Installation
