@@ -12,6 +12,10 @@ inputs:
     default: "false"
     description: "Index content"
     required: false
+  root:
+    default: "."
+    description: "Root of Repository"
+    required: false
 description: simple GitHub action to parse Markdown Links into a .yaml file for Hugo
 branding:
   icon: anchor
@@ -23,3 +27,4 @@ runs:
   - "-input=${{ inputs.input }}"
   - "-output=${{ inputs.output }}"
   - "-index=${{ inputs.index }}"
+  - "-root=${{ inputs.root }}"
