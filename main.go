@@ -46,7 +46,7 @@ type ConfigTOML struct {
 func getIgnoredFiles(base string) (res map[string]struct{}) {
 	res = make(map[string]struct{})
 
-	source, err := ioutil.ReadFile(filepath.FromSlash("/config.toml"))
+	source, err := ioutil.ReadFile(filepath.FromSlash(base + "/config.toml"))
 	if err != nil {
 		return res
 	}
