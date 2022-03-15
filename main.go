@@ -31,10 +31,10 @@ type Index struct {
 }
 
 type Content struct {
-	Title   string			`json:"title"`
-	Content string			`json:"content"`
-	LastModified time.Time	`json:"lastmodified"`
-	Tags 	[]string		`json:"tags"`
+	Title        string    `json:"title"`
+	Content      string    `json:"content"`
+	LastModified time.Time `json:"lastmodified"`
+	Tags         []string  `json:"tags"`
 }
 
 type ContentIndex = map[string]Content
@@ -46,7 +46,7 @@ type ConfigTOML struct {
 func getIgnoredFiles(base string) (res map[string]struct{}) {
 	res = make(map[string]struct{})
 
-	source, err := ioutil.ReadFile(base + "/config.toml")
+	source, err := ioutil.ReadFile(filepath.FromSlash("/config.toml"))
 	if err != nil {
 		return res
 	}

@@ -19,10 +19,13 @@ func walk(root, ext string, index bool, ignorePaths map[string]struct{}) (res []
 	m.Handle("---", front.YAMLHandler)
 	nPrivate := 0
 
-	err := filepath.WalkDir(root, func(s string, d fs.DirEntry, e error) error {
+	err := filepath.WalkDir(root, func(fp string, d fs.DirEntry, e error) error {
 		if e != nil {
 			return e
 		}
+
+		// path normalize fp
+		s := filepath.ToSlash(fp)
 		if _, ignored := ignorePaths[s]; ignored {
 			fmt.Printf("[Ignored] %s\n", d.Name())
 			nPrivate++
@@ -50,8 +53,8 @@ func walk(root, ext string, index bool, ignorePaths map[string]struct{}) (res []
 					adjustedPath := UnicodeSanitize(strings.Replace(hugoPathTrim(trim(s, root, ".md")), " ", "-", -1))
 					i[adjustedPath] = Content{
 						LastModified: info.ModTime(),
-						Title:   title,
-						Content: body,
+						Title:        title,
+						Content:      body,
 					}
 				} else {
 					fmt.Printf("[Ignored] %s\n", d.Name())
@@ -78,4 +81,3 @@ func getText(dir string) string {
 
 	return string(fileBytes)
 }
-
