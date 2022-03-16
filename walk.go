@@ -44,7 +44,11 @@ func walk(root, ext string, index bool, ignorePaths map[string]struct{}) (res []
 				if parsedTitle, ok := frontmatter["title"]; ok {
 					title = parsedTitle.(string)
 				} else {
-					title = "Untitled Page"
+					title = strings.TrimSuffix(d.Name(), ".md")
+
+					if title == "" {
+						title = "No Title Specified"
+					}
 				}
 
 				// check if page is private
