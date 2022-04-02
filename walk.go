@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 )
 
 // recursively walk directory and return all files with given extension
@@ -18,6 +19,8 @@ func walk(root, ext string, index bool, ignorePaths map[string]struct{}) (res []
 	m := front.NewMatter()
 	m.Handle("---", front.YAMLHandler)
 	nPrivate := 0
+
+	start := time.Now()
 
 	err := filepath.WalkDir(root, func(fp string, d fs.DirEntry, e error) error {
 		if e != nil {
@@ -50,8 +53,10 @@ func walk(root, ext string, index bool, ignorePaths map[string]struct{}) (res []
 				// check if page is private
 				if parsedPrivate, ok := frontmatter["draft"]; !ok || !parsedPrivate.(bool) {
 					info, _ := os.Stat(s)
-					adjustedPath := UnicodeSanitize(strings.Replace(hugoPathTrim(trim(s, root, ".md")), " ", "-", -1))
-					i[adjustedPath] = Content{
+					source := processSource(trim(s, root, ".md"))
+
+					// adjustedPath := UnicodeSanitize(strings.Replace(hugoPathTrim(trim(s, root, ".md")), " ", "-", -1))
+					i[source] = Content{
 						LastModified: info.ModTime(),
 						Title:        title,
 						Content:      body,
@@ -67,6 +72,10 @@ func walk(root, ext string, index bool, ignorePaths map[string]struct{}) (res []
 	if err != nil {
 		panic(err)
 	}
+
+	end := time.Now()
+
+	fmt.Printf("[DONE] in %s\n", end.Sub(start).Round(time.Millisecond))
 	fmt.Printf("Ignored %d private files \n", nPrivate)
 	fmt.Printf("Parsed %d total links \n", len(res))
 	return res, i
