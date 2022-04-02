@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"net/url"
 	"path/filepath"
 	"strings"
 	"unicode"
@@ -22,7 +23,16 @@ func processTarget(source string) string {
 	if strings.HasPrefix(source, "/") {
 		return strings.TrimSuffix(source, ".md")
 	}
-	return "/" + strings.TrimSuffix(strings.TrimSuffix(source, ".html"), ".md")
+	res := "/" + strings.TrimSuffix(strings.TrimSuffix(source, ".html"), ".md")
+	res = strings.Split(res, "#")[0]
+	res = strings.TrimSpace(res)
+	return UnicodeSanitize(res)
+}
+
+func processSource(source string) string {
+	res := filepath.ToSlash(hugoPathTrim(source))
+	res = UnicodeSanitize(res)
+	return strings.ReplaceAll(url.PathEscape(res), "%2F", "/")
 }
 
 func isInternal(link string) bool {
@@ -80,4 +90,3 @@ func filter(links []Link) (res []Link) {
 	fmt.Printf("Removed %d external and non-markdown links\n", len(links)-len(res))
 	return res
 }
-

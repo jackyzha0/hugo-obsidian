@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/PuerkitoBio/goquery"
 	"io/ioutil"
-	"path/filepath"
 	"strings"
 )
 
@@ -19,7 +18,7 @@ func parse(dir, pathPrefix string) []Link {
 
 	// parse md
 	var links []Link
-	fmt.Printf("[Parsing note] %s\n", trim(dir, pathPrefix, ".md"))
+	fmt.Printf("[Parsing note] %s => ", trim(dir, pathPrefix, ".md"))
 
 	var buf bytes.Buffer
 	if err := md.Convert(source, &buf); err != nil {
@@ -35,22 +34,18 @@ func parse(dir, pathPrefix string) []Link {
 			target = "#"
 		}
 
-		target = strings.Replace(target, "%20", " ", -1)
-		target = strings.Split(processTarget(target), "#")[0]
-		target = strings.TrimSpace(target)
-		target = strings.Replace(target, " ", "-", -1)
+		target = processTarget(target)
+		source := processSource(trim(dir, pathPrefix, ".md"))
 
-		source := filepath.ToSlash(hugoPathTrim(trim(dir, pathPrefix, ".md")))
-
-		fmt.Printf("  '%s' => %s\n", text, target)
+		// fmt.Printf("  '%s' => %s\n", source, target)
 		links = append(links, Link{
-			Source: UnicodeSanitize(source),
-			Target: UnicodeSanitize(target),
+			Source: source,
+			Target: target,
 			Text:   text,
 		})
 		n++
 	})
-	fmt.Printf("  Found: %d links\n", n)
+	fmt.Printf("found: %d links\n", n)
 
 	return links
 }
