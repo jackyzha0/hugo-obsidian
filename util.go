@@ -24,6 +24,7 @@ func processTarget(source string) string {
 		return strings.TrimSuffix(source, ".md")
 	}
 	res := "/" + strings.TrimSuffix(strings.TrimSuffix(source, ".html"), ".md")
+	res, _ = url.PathUnescape(res)
 	res = strings.Split(res, "#")[0]
 	res = strings.TrimSpace(res)
 	return UnicodeSanitize(res)
