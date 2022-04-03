@@ -27,7 +27,8 @@ func processTarget(source string) string {
 	res, _ = url.PathUnescape(res)
 	res = strings.Split(res, "#")[0]
 	res = strings.TrimSpace(res)
-	return UnicodeSanitize(res)
+	res = UnicodeSanitize(res)
+	return strings.ReplaceAll(url.PathEscape(res), "%2F", "/")
 }
 
 func processSource(source string) string {
