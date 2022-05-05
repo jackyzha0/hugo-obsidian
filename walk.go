@@ -2,23 +2,32 @@ package main
 
 import (
 	"fmt"
-	"github.com/gernest/front"
 	"io/fs"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
 	"time"
+
+	"github.com/adrg/frontmatter"
+	"gopkg.in/yaml.v2"
 )
+
+type Front struct {
+	Title string `yaml:"title"`
+	Draft bool   `yaml:"draft"`
+}
 
 // recursively walk directory and return all files with given extension
 func walk(root, ext string, index bool, ignorePaths map[string]struct{}) (res []Link, i ContentIndex) {
 	fmt.Printf("Scraping %s\n", root)
 	i = make(ContentIndex)
 
-	m := front.NewMatter()
-	m.Handle("---", front.YAMLHandler)
 	nPrivate := 0
+
+	formats := []*frontmatter.Format{
+		frontmatter.NewFormat("---", "---", yaml.Unmarshal),
+	}
 
 	start := time.Now()
 
@@ -37,28 +46,25 @@ func walk(root, ext string, index bool, ignorePaths map[string]struct{}) (res []
 			if index {
 				text := getText(s)
 
-				frontmatter, body, err := m.Parse(strings.NewReader(text))
+				var matter Front
+				raw_body, err := frontmatter.Parse(strings.NewReader(text), &matter, formats...)
+				body := string(raw_body)
 				if err != nil {
-					frontmatter = map[string]interface{}{}
+					matter = Front{
+						Title: "Untitled Page",
+						Draft: false,
+					}
 					body = text
 				}
-
-				var title string
-				if parsedTitle, ok := frontmatter["title"]; ok {
-					title = parsedTitle.(string)
-				} else {
-					title = "Untitled Page"
-				}
-
 				// check if page is private
-				if parsedPrivate, ok := frontmatter["draft"]; !ok || !parsedPrivate.(bool) {
+				if !matter.Draft {
 					info, _ := os.Stat(s)
 					source := processSource(trim(s, root, ".md"))
 
 					// adjustedPath := UnicodeSanitize(strings.Replace(hugoPathTrim(trim(s, root, ".md")), " ", "-", -1))
 					i[source] = Content{
 						LastModified: info.ModTime(),
-						Title:        title,
+						Title:        matter.Title,
 						Content:      body,
 					}
 				} else {
