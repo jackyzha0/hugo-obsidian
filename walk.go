@@ -42,7 +42,6 @@ func walk(root, ext string, index bool, ignorePaths map[string]struct{}) (res []
 			fmt.Printf("[Ignored] %s\n", d.Name())
 			nPrivate++
 		} else if filepath.Ext(d.Name()) == ext {
-			res = append(res, parse(s, root)...)
 			if index {
 				text := getText(s)
 
@@ -61,12 +60,13 @@ func walk(root, ext string, index bool, ignorePaths map[string]struct{}) (res []
 					info, _ := os.Stat(s)
 					source := processSource(trim(s, root, ".md"))
 
-					// adjustedPath := UnicodeSanitize(strings.Replace(hugoPathTrim(trim(s, root, ".md")), " ", "-", -1))
+					// add to content and link index
 					i[source] = Content{
 						LastModified: info.ModTime(),
 						Title:        matter.Title,
 						Content:      body,
 					}
+					res = append(res, parse(s, root)...)
 				} else {
 					fmt.Printf("[Ignored] %s\n", d.Name())
 					nPrivate++
