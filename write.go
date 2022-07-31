@@ -50,7 +50,7 @@ func write(links []Link, contentIndex ContentIndex, toIndex bool, out string, ro
 }
 
 func writeLinkMap(contentIndex *ContentIndex, root string) error {
-	fp := path.Join(root, "linkmap")
+	fp := path.Join(root, "public", "linkmap")
 	file, err := os.OpenFile(fp, os.O_TRUNC|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		return err
