@@ -61,7 +61,7 @@ func writeLinkMap(contentIndex *ContentIndex, root string) error {
 		if path == "/" {
 			_, _ = datawriter.WriteString("/index.html /\n")
 		} else {
-			_, _ = datawriter.WriteString(path + "/$1.{html} " + path + "/$1\n")
+			_, _ = datawriter.WriteString(path + "/index.{html} " + path + "/\n")
 		}
 	}
 	datawriter.Flush()
