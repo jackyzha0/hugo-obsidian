@@ -76,7 +76,7 @@ func main() {
 	ignoreBlobs := getIgnoredFiles(*root)
 	l, i := walk(*in, ".md", *index, ignoreBlobs)
 	f := filter(l)
-	err := write(f, i, *index, *out)
+	err := write(f, i, *index, *out, *root)
 	if err != nil {
 		panic(err)
 	}

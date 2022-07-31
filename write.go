@@ -1,16 +1,18 @@
 package main
 
 import (
+	"bufio"
 	"encoding/json"
 	"io/ioutil"
+	"os"
 	"path"
 )
 
-func write(links []Link, contentIndex ContentIndex, toIndex bool, out string) error {
+func write(links []Link, contentIndex ContentIndex, toIndex bool, out string, root string) error {
 	index := index(links)
 	resStruct := struct {
-		Index Index 	`json:"index"`
-		Links []Link 	`json:"links"`
+		Index Index  `json:"index"`
+		Links []Link `json:"links"`
 	}{
 		Index: index,
 		Links: links,
@@ -25,6 +27,7 @@ func write(links []Link, contentIndex ContentIndex, toIndex bool, out string) er
 		return writeErr
 	}
 
+	// check whether to index content
 	if toIndex {
 		marshalledContentIndex, mcErr := json.MarshalIndent(&contentIndex, "", "  ")
 		if mcErr != nil {
@@ -35,7 +38,34 @@ func write(links []Link, contentIndex ContentIndex, toIndex bool, out string) er
 		if writeErr != nil {
 			return writeErr
 		}
+
+		// write linkmap
+		writeErr = writeLinkMap(&contentIndex, root)
+		if writeErr != nil {
+			return writeErr
+		}
 	}
+
+	return nil
+}
+
+func writeLinkMap(contentIndex *ContentIndex, root string) error {
+	fp := path.Join(root, "linkmap")
+	file, err := os.OpenFile(fp, os.O_TRUNC|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		return err
+	}
+
+	datawriter := bufio.NewWriter(file)
+	for path := range *contentIndex {
+		if path == "/" {
+			_, _ = datawriter.WriteString("/index.html /\n")
+		} else {
+			_, _ = datawriter.WriteString(path + "/$1.{html} " + path + "/$1\n")
+		}
+	}
+	datawriter.Flush()
+	file.Close()
 
 	return nil
 }
@@ -63,6 +93,3 @@ func index(links []Link) (index Index) {
 	index.Backlinks = backlinkMap
 	return index
 }
-
-
-
