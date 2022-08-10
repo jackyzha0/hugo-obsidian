@@ -13,7 +13,7 @@ Read Markdown from the `/content` folder and place the resulting `linkIndex.json
 
 ```shell
 # Installation
-go install github.com/jackyzha0/hugo-obsidian
+go install github.com/jackyzha0/hugo-obsidian@latest
 
 # Run
 hugo-obsidian -input=content -output=data -index=true
