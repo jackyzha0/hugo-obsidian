@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/PuerkitoBio/goquery"
 	"io/ioutil"
+	"net/url"
 	"strings"
 )
 
@@ -35,12 +36,13 @@ func parse(dir, pathPrefix string) []Link {
 		}
 
 		target = processTarget(target)
+		unescapedTarget, _ := url.PathUnescape(target)
 		source := processSource(trim(dir, pathPrefix, ".md"))
 
 		// fmt.Printf("  '%s' => %s\n", source, target)
 		links = append(links, Link{
 			Source: source,
-			Target: target,
+			Target: unescapedTarget,
 			Text:   text,
 		})
 		n++
