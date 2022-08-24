@@ -23,9 +23,9 @@ func processTarget(source string) string {
 	if strings.HasPrefix(source, "/") {
 		return strings.TrimSuffix(source, ".md")
 	}
-	res := "/" + strings.TrimSuffix(strings.TrimSuffix(source, ".html"), ".md")
+	res := strings.Split(source, "#")[0]
+	res = "/" + strings.TrimSuffix(strings.TrimSuffix(res, ".html"), ".md")
 	res, _ = url.PathUnescape(res)
-	res = strings.Split(res, "#")[0]
 	res = strings.TrimSpace(res)
 	res = UnicodeSanitize(res)
 	return strings.ReplaceAll(url.PathEscape(res), "%2F", "/")
