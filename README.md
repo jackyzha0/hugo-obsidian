@@ -1,4 +1,4 @@
-# Obsidian Link Scrapper
+# Obsidian Link Scraper
 Used by [Quartz](https://github.com/jackyzha0/quartz)
 
 This repository comes to you in two parts.
