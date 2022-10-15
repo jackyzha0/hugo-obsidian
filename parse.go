@@ -38,12 +38,14 @@ func parse(dir, pathPrefix string) []Link {
 		source := processSource(trim(dir, pathPrefix, ".md"))
 
 		// fmt.Printf("  '%s' => %s\n", source, target)
-		links = append(links, Link{
-			Source: source,
-			Target: target,
-			Text:   text,
-		})
-		n++
+		if !strings.HasPrefix(text, "^"){
+			links = append(links, Link{
+				Source: source,
+				Target: target,
+				Text:   text,
+			})
+			n++
+		}
 	})
 	fmt.Printf("found: %d links\n", n)
 
