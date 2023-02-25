@@ -60,10 +60,17 @@ func walk(root, ext string, index bool, ignorePaths map[string]struct{}) (res []
 					info, _ := os.Stat(s)
 					source := processSource(trim(s, root, ".md"))
 
+					// default title
+					title := matter.Title
+					if title == "" {
+						fileName := d.Name()
+						title = strings.TrimSuffix(filepath.Base(fileName), filepath.Ext(fileName))
+					}
+
 					// add to content and link index
 					i[source] = Content{
 						LastModified: info.ModTime(),
-						Title:        matter.Title,
+						Title:        title,
 						Content:      body,
 					}
 					res = append(res, parse(s, root)...)
