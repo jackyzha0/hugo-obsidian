@@ -69,6 +69,11 @@ func walk(root, ext string, index bool, ignorePaths map[string]struct{}) (res []
 						title = strings.TrimSuffix(filepath.Base(fileName), filepath.Ext(fileName))
 					}
 
+          // default tags
+          if matter.Tags == nil {
+            matter.Tags = []string{}
+          }
+
 					// add to content and link index
 					i[source] = Content{
 						LastModified: info.ModTime(),
