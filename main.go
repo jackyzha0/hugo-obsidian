@@ -35,6 +35,7 @@ type Content struct {
 	Content      string    `json:"content"`
 	LastModified time.Time `json:"lastmodified"`
 	Tags         []string  `json:"tags"`
+	Aliases      []string  `json:"aliases"`
 }
 
 type ContentIndex = map[string]Content
