@@ -14,7 +14,9 @@ var md goldmark.Markdown
 
 func init() {
 	md = goldmark.New(
-		goldmark.WithExtensions(&wikilink.Extender{}),
+		goldmark.WithExtensions(&wikilink.Extender{
+			Resolver: QuartzResolver,
+		}),
 	)
 }
 
