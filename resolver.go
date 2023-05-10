@@ -1,5 +1,3 @@
-package wikilink
-
 import "path/filepath"
 var QuartzResolver Resolver = quartzResolver{}
 
