@@ -27,7 +27,7 @@ func (quartzResolver) ResolveWikilink(n *wikilink.Node) ([]byte, error) {
 	}
 	if len(n.Fragment) > 0 {
 		i += copy(dest[i:], _hash)
-		fmt.Println(n.Fragment)
+		fmt.Println(string(n.Fragment))
 		for f := 0; f < len(n.Fragment); f++ {
 			fmt.Println(string(n.Fragment[f]))
 			if string(n.Fragment[f]) != "." {
@@ -35,7 +35,7 @@ func (quartzResolver) ResolveWikilink(n *wikilink.Node) ([]byte, error) {
 				i++
 			}
 		}
-		fmt.Println(dest[:i])
+		fmt.Println(string(dest[:i]))
 	}
 	return dest[:i], nil
 }
