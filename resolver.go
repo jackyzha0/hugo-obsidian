@@ -27,7 +27,7 @@ func (quartzResolver) ResolveWikilink(n *wikilink.Node) ([]byte, error) {
 	if len(n.Fragment) > 0 {
 		i += copy(dest[i:], _hash)
 		for f := 0; f < len(n.Fragment); f++ {
-			if n.Fragment[f] == '.' {
+			if n.Fragment[f] == "." {
 				continue
 			}
 			dest[i] = n.Fragment[f]
