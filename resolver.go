@@ -1,6 +1,9 @@
 package main
 
-import "path/filepath"
+import (
+	"path/filepath"
+	wikilink "github.com/abhinav/goldmark-wikilink"
+)
 var QuartzResolver Resolver = quartzResolver{}
 
 type Resolver interface {
