@@ -1,3 +1,5 @@
+package main
+
 import "path/filepath"
 var QuartzResolver Resolver = quartzResolver{}
 
