@@ -11,6 +11,7 @@ type Resolver interface {
 }
 
 var _html = []byte(".html")
+var _hash = []byte("#")
 
 type quartzResolver struct{}
 
