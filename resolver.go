@@ -4,14 +4,14 @@ import "path/filepath"
 var QuartzResolver Resolver = quartzResolver{}
 
 type Resolver interface {
-	ResolveWikilink(*Node) (destination []byte, err error)
+	ResolveWikilink(*wikilink.Node) (destination []byte, err error)
 }
 
 var _html = []byte(".html")
 
 type quartzResolver struct{}
 
-func (quartzResolver) ResolveWikilink(n *Node) ([]byte, error) {
+func (quartzResolver) ResolveWikilink(n *wikilink.Node) ([]byte, error) {
 	dest := make([]byte, len(n.Target)+len(_html)+len(_hash)+len(n.Fragment))
 	var i int
 	if len(n.Target) > 0 {
