@@ -2,21 +2,15 @@ package main
 
 import (
 	"flag"
-	"github.com/BurntSushi/toml"
-	wikilink "github.com/abhinav/goldmark-wikilink"
-	"github.com/yuin/goldmark"
 	"io/ioutil"
 	"path/filepath"
 	"time"
+
+	"github.com/BurntSushi/toml"
+	"github.com/yuin/goldmark"
 )
 
 var md goldmark.Markdown
-
-func init() {
-	md = goldmark.New(
-		goldmark.WithExtensions(&wikilink.Extender{}),
-	)
-}
 
 type Link struct {
 	Source string `json:"source"`

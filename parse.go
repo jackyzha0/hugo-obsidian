@@ -3,13 +3,15 @@ package main
 import (
 	"bytes"
 	"fmt"
-	"github.com/PuerkitoBio/goquery"
 	"io/ioutil"
 	"strings"
+
+	"github.com/PuerkitoBio/goquery"
+	"github.com/yuin/goldmark"
 )
 
 // parse single file for links
-func parse(dir, pathPrefix string) []Link {
+func parse(md goldmark.Markdown, fileIndex fileIndex, dir, pathPrefix string) []Link {
 	// read file
 	source, err := ioutil.ReadFile(dir)
 	if err != nil {
@@ -37,8 +39,10 @@ func parse(dir, pathPrefix string) []Link {
 		target = processTarget(target)
 		source := processSource(trim(dir, pathPrefix, ".md"))
 
+		target = fileIndex.resolve(target)
+
 		// fmt.Printf("  '%s' => %s\n", source, target)
-		if !strings.HasPrefix(text, "^"){
+		if !strings.HasPrefix(text, "^") {
 			links = append(links, Link{
 				Source: source,
 				Target: target,
